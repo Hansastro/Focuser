@@ -1,6 +1,4 @@
-#include <StepperControl_A4988.h>
-
-StepperControl_A4988 myStepper(8, 9, 3, 4, 5, 2, 7, 6);
+#include <StepperControl_A4988.h>u, 3, 4, 5, 2, 7, 6);
 
 unsigned int currentPosition = 0;
 int isInitDone = 0;
