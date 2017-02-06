@@ -10,8 +10,8 @@ The Stepper Motor is controled by a A4988 Controller. This controler is used by 
 - Arduino Uno ([link](https://www.arduino.cc/en/Main/ArduinoBoardUno))
 - A bipolar stepper motor
 - A Temperature Sensor LM335 ([Datasheet](http://www.ti.com/lit/ds/symlink/lm335.pdf))
-- The Moolight Protocol ([PDF] (http://www.indilib.org/media/kunena/attachments/1/HighResSteppermotor107.pdf))
-- A A4988 Stepper motor controller ([Datasheet] (https://www.pololu.com/file/0J450/a4988_DMOS_microstepping_driver_with_translator.pdf))
+- The [Moolight Protocol](http://www.indilib.org/media/kunena/attachments/1/HighResSteppermotor107.pdf)
+- A [A4988](https://www.pololu.com/file/0J450/a4988_DMOS_microstepping_driver_with_translator.pdf) Stepper motor controller
 
 ## Compilation
 This project used the standard Arduino file organisation. A main file in the the folder Focuser and the librairies used are in the folder libraires.
