@@ -21,5 +21,5 @@ The Arduino IDE can be found hier: [link](https://www.arduino.cc/en/Main/Softwar
 
 Compile and transfer the program to the Arduino.
 
-When you start our Indi server use the **indi_moonlite_focus** module to enable the focuser. 
+When you start your Indi server use the **indi_moonlite_focus** module to enable the focuser. 
 The software provided by Moonlite on Windows is also usable.
