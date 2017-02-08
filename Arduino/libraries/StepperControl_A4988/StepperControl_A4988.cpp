@@ -212,9 +212,9 @@ void StepperControl_A4988::moveMotor()
 	      this->currentPosition--;
 	    }
 	  digitalWrite(this->enablePin, LOW);
-	  delayMicroseconds(3);
+	  delayMicroseconds(5);
 	  digitalWrite(this->stepPin, HIGH);
-  	  delayMicroseconds(3);
+  	  delayMicroseconds(5);
 	  digitalWrite(this->stepPin, LOW);
 	  
 	  this->timeStamp = millis();
