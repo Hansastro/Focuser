@@ -1,9 +1,27 @@
 #include <LM335.h>
 #include <Moonlite.h>
-#include <StepperControl.h>
+#include <StepperControl_A4988.h>
 
-LM335 TemperatureSensor(0);
-StepperControl Motor(9, 7, 8, 10);
+const int stepPin = 8;
+const int directionPin = 9;
+const int stepMode1 = 3;
+const int stepMode2 = 4;
+const int stepMode3 = 5;
+const int enablePin = 2;
+const int sleepPin = 7;
+const int resetPin = 6;
+
+const int temperatureSensorPin = 4;
+
+LM335 TemperatureSensor(temperatureSensorPin);
+StepperControl_A4988 Motor(stepPin,
+                            directionPin,
+                            stepMode1, 
+                            stepMode2,
+                            stepMode3,
+                            enablePin,
+                            sleepPin,
+                            resetPin);
 Moonlite SerialProtocol;
 
 void processCommand()
@@ -43,9 +61,11 @@ void processCommand()
         case 630:
           SerialProtocol.setAnswer(2,(long)8);
           break;
+        case 800:
         case 1250:
           SerialProtocol.setAnswer(2,(long)4);
           break;
+        case 1000:
         case 2500:
           SerialProtocol.setAnswer(2,(long)2);
           break;
@@ -86,10 +106,10 @@ void processCommand()
       switch(SerialProtocol.getCommand().parameter)
       {
         case 0x02:
-          Motor.setSpeed(2500);
+          Motor.setSpeed(Motor.getStepMode()==SC_SIXTEENTH_STEP?2500:1000);
           break;
         case 0x04:
-          Motor.setSpeed(1250);
+          Motor.setSpeed(Motor.getStepMode()==SC_SIXTEENTH_STEP?1250:800);
           break;
         case 0x08:
           Motor.setSpeed(630);
@@ -106,11 +126,15 @@ void processCommand()
       break;
     case ML_SF:
       // Set the stepping mode to full step
-      Motor.setStepMode(SC_FULL_STEP);
+      Motor.setStepMode(SC_EIGHTH_STEP);
+      if(Motor.getSpeed()>1000)
+      {
+        Motor.setSpeed(630);
+      }
       break;
     case ML_SH:
       // Set the stepping mode to half step
-      Motor.setStepMode(SC_HALF_STEP);
+      Motor.setStepMode(SC_SIXTEENTH_STEP);
       break;
     case ML_SN:
       // Set the target position
@@ -142,7 +166,7 @@ void setup()
     SerialProtocol.init(9600);
     
     // Set the motor speed to a valid value for Moonlite
-    Motor.setSpeed(16);
+    Motor.setSpeed(1000);
 }
 
 void loop()

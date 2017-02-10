@@ -80,7 +80,7 @@ class StepperControl_A4988
   int getBrakeMode();
 
   // Other public members
-  void manage();
+  void Manage();
   void goToTargetPosition();
   void stopMovement();
   int isInMove();
@@ -94,6 +94,7 @@ class StepperControl_A4988
   unsigned int currentPosition;
   unsigned int targetPosition;
   unsigned int speed;  // Speed in ticks per seconds
+  unsigned int maxSpeed; // Maximal Speed
 
   unsigned long timeStamp;
 

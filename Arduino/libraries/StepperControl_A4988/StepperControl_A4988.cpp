@@ -152,7 +152,7 @@ int StepperControl_A4988::getBrakeMode()
 
 //------------------------------------------------------------------------------------
 // Other public members
-void StepperControl_A4988::manage()
+void StepperControl_A4988::Manage()
 {
   if(this->inMove)
     {
@@ -182,7 +182,7 @@ int StepperControl_A4988::isInMove()
 // Privates
 void StepperControl_A4988::moveMotor()
 {
-  if(targetPosition != currentPosition)
+  if(this->targetPosition != this->currentPosition)
     {
       if ((millis() - this->timeStamp) >= ((unsigned long)((1/(float)this->speed)*1000)))
 	{
