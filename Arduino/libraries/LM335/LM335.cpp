@@ -30,11 +30,11 @@ along with LM335 library.  If not, see <http://www.gnu.org/licenses/>.
 LM335::LM335(int aquisitionPin)
 {
   this->aquisitionPin = aquisitionPin;
-  pinMode(this->aquisitionPin, INPUT);
   this->integrationLoop = LM335_DEFAULT_INTEGRATION_LOOP;
   this->integrationLoopNumber = 0;
-  this->temperature = readTemperature();
+  this->temperature = this->readTemperature();
   this->integratedTemperature = 0;
+  this->temperatureCompensationValue = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -45,37 +45,49 @@ void LM335::setNumberOfIntegration(int integrationLoop)
   this->integrationLoop = integrationLoop;
 }
 
+// Set the offset of the temperature in C°
+void LM335::setCompensationValue(float compensationValue)
+{
+   this->temperatureCompensationValue = compensationValue;
+}
+
 //-----------------------------------------------------------------------------
 // Getters
 
 // Get the temperature in C°
 float LM335::getTemperature()
 {
-  return temperature;
+  return this->temperature;
 }
 
 int LM335::getNumberOfIntegrationLoop()
 {
-  return integrationLoop;
+  return this->integrationLoop;
+}
+
+float LM335::getCompensationValue()
+{
+   return this->temperatureCompensationValue;
 }
 
 //-----------------------------------------------------------------------------
 // Public Members
 void LM335::integrateTemperature()
 {
-  integratedTemperature += readTemperature();
-  integrationLoopNumber ++;
-  if (integrationLoopNumber >= integrationLoop)
+  this->integratedTemperature += this->readTemperature();
+  this->integrationLoopNumber ++;
+  if (this->integrationLoopNumber >= this->integrationLoop)
     {
-      temperature = integratedTemperature / integrationLoop;
-      integratedTemperature = 0;
-      integrationLoopNumber = 0;
+      temperature = (this->integratedTemperature / this->integrationLoop)
+			+ this->temperatureCompensationValue;
+      this->integratedTemperature = 0;
+      this->integrationLoopNumber = 0;
     }
 }
 
 void LM335::Manage()
 {
-  integrateTemperature();
+  this->integrateTemperature();
 }
 
 //-----------------------------------------------------------------------------

@@ -38,10 +38,12 @@ class LM335
 
   // Setters:
   void setNumberOfIntegration(int integrationLoop);
+  void setCompensationValue(float compensationValue);
 
   // Getter:
   float getTemperature();
   int getNumberOfIntegrationLoop();
+  float getCompensationValue();
 
   // Other Public Members
   void Manage();
@@ -55,6 +57,7 @@ class LM335
   int integrationLoop;
   int integrationLoopNumber;
   int aquisitionPin;
+  float temperatureCompensationValue;
 
   void integrateTemperature();
 };
