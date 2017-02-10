@@ -32,7 +32,7 @@ LM335::LM335(int aquisitionPin)
   this->aquisitionPin = aquisitionPin;
   this->integrationLoop = LM335_DEFAULT_INTEGRATION_LOOP;
   this->integrationLoopNumber = 0;
-  this->temperature = this->readTemperature();
+  this->temperature = -65535;
   this->integratedTemperature = 0;
   this->temperatureCompensationValue = 0;
 }
@@ -87,6 +87,10 @@ void LM335::integrateTemperature()
 
 void LM335::Manage()
 {
+  if(temperature<-65000)
+  {
+     this->temperature = this->readTemperature();
+  }
   this->integrateTemperature();
 }
 
