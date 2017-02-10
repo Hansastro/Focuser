@@ -46,8 +46,8 @@ along with StepperControl library.  If not, see <http://www.gnu.org/licenses/>.
 #define SC_MAX_SPEED 1000
 #define SC_MAX_SPEED_SIXTEENTH_STEP 3000
 
-#define SC_MOVEMODE_QUICK 0
-#define SC_MOVEMODE_PER_STEP 1
+#define SC_MOVEMODE_PER_STEP 0
+#define SC_MOVEMODE_SMOOTH 1
 
 #define SC_DEFAULT_SPEED 1000
 
@@ -97,7 +97,6 @@ class StepperControl_A4988
   unsigned int currentPosition;
   unsigned int targetPosition;
   unsigned int speed;  // Speed in ticks per seconds
-  unsigned int maxSpeed; // Maximal Speed
 
   unsigned long timeStamp;
 
