@@ -105,7 +105,28 @@ void StepperControl_A4988::setMoveMode(int moveMode)
 
 void StepperControl_A4988::setSpeed(unsigned int speed)
 {
-  this->speed = speed;
+  if(speed > SC_MAX_SPEED)
+  {
+     if(this->stepMode == SC_SIXTEENTH_STEP)
+     {
+         if (speed > SC_MAX_SPEED_SIXTEENTH_STEP)
+         {
+            this->speed = SC_MAX_SPEED_SIXTEENTH_STEP;
+         }
+         else
+         {
+            this->speed = speed;
+         }
+     }
+     else
+     {
+        this->speed = SC_MAX_SPEED;
+     }
+  }
+  else
+  {
+     this->speed = speed;
+  }
 }
 
 void StepperControl_A4988::setBrakeMode(int brakeMode)

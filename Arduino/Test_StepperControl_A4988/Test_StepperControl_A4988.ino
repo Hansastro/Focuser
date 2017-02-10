@@ -6,7 +6,7 @@ unsigned int currentPosition = 0;
 int isInitDone = 0;
 
 unsigned int ping = 0;
-unsigned int pong = 35000;
+unsigned int pong = 10000; //35000;
 int direction = 0;
 unsigned long timeStamp = 0;
 
@@ -17,7 +17,7 @@ void setup()
   myStepper.setDirection(SC_CLOCKWISE);
   myStepper.setStepMode(SC_SIXTEENTH_STEP);
   myStepper.setBrakeMode(false);
-  myStepper.setSpeed(4000);
+  myStepper.setSpeed(10000);
 }
 
 void loop()
@@ -30,7 +30,7 @@ void loop()
     isInitDone = 1;
   }
 
-  myStepper.manage();
+  myStepper.Manage();
 
   if(!myStepper.isInMove())
   {
@@ -45,7 +45,7 @@ void loop()
     Serial.print(" ");
     Serial.print(timeStamp);
     Serial.print(" ");
-    Serial.println(myStepper.getCurrentPosition());
+    Serial.println(myStepper.getSpeed());
     timeStamp = millis();
   }
 
