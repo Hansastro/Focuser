@@ -27,7 +27,7 @@ along with LM335 library.  If not, see <http://www.gnu.org/licenses/>.
 //-----------------------------------------------------------------------------
 // Constructors
 
-LM335::LM335(int aquisistionPin)
+LM335::LM335(int aquisitionPin)
 {
   this->aquisitionPin = aquisitionPin;
   pinMode(this->aquisitionPin, INPUT);
