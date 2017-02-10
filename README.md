@@ -2,7 +2,7 @@
 Focuser for Astronomy based on Arduino (usable by Indi)
 
 This focuser is used with Indilib (http://indilib.org/)
-It use the protcol Moonligth (As documented in the indilib project).
+It use the protcol Moonlite (As documented in the indilib project).
 A LM335 is used as temperature sensor.
 The Stepper Motor is controled by a A4988 Controller. This controler is used by a lot of 3D printer like the RepRap and it should be easy to find.
 
@@ -10,7 +10,7 @@ The Stepper Motor is controled by a A4988 Controller. This controler is used by 
 - Arduino Uno ([link](https://www.arduino.cc/en/Main/ArduinoBoardUno))
 - A bipolar stepper motor
 - A Temperature Sensor LM335 ([Datasheet](http://www.ti.com/lit/ds/symlink/lm335.pdf))
-- The [Moolight Protocol](http://www.indilib.org/media/kunena/attachments/1/HighResSteppermotor107.pdf)
+- The [Moolite Protocol](http://www.indilib.org/media/kunena/attachments/1/HighResSteppermotor107.pdf)
 - A [A4988](https://www.pololu.com/file/0J450/a4988_DMOS_microstepping_driver_with_translator.pdf) Stepper motor controller
 
 ## Compilation
