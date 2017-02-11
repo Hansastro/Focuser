@@ -89,9 +89,8 @@ class StepperControl_A4988
   void goToTargetPosition();
   void stopMovement();
   int isInMove();
-  
-unsigned int targetSpeed;
-long positionTargetSpeedReached;
+  void compensateTemperature(float CurrentTemperature, int temperatureCoefficient);  
+
  private:
   int direction;
   int stepMode;
@@ -104,7 +103,9 @@ long positionTargetSpeedReached;
   long targetPosition;
   unsigned int speed;  // Speed in ticks per seconds
   bool targetSpeedReached;
-  long deccelerationPosition;
+  unsigned int targetSpeed;
+  long positionTargetSpeedReached;
+  float lastCompensatedTemperature;
 
   unsigned long timestamp;
   unsigned long accelTimestamp;

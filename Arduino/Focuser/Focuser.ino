@@ -13,6 +13,10 @@ const int resetPin = 6;
 
 const int temperatureSensorPin = 4;
 
+unsigned long timestamp;
+bool temperatureCompensationEnabled;
+int temperatureCoefficient;
+
 LM335 TemperatureSensor(temperatureSensorPin);
 StepperControl_A4988 Motor(stepPin,
                             directionPin,
@@ -99,7 +103,7 @@ void processCommand()
       break;
     case ML_SC:
       // Set the temperature coefficient
-      // Not implemented
+      temperatureCoefficient = SerialProtocol.getCommand().parameter;
       break;
     case ML_SD:
       // Set the motor speed
@@ -146,11 +150,11 @@ void processCommand()
       break;
     case ML_PLUS:
       // Activate temperature compensation focusing
-      // Not implemented
+      temperatureCompensationEnabled = true;
       break;
     case ML_MINUS:
       // Disable temperature compensation focusing
-      // Not implemented
+      temperatureCompensationEnabled = false;
       break;
     case ML_PO:
       // Temperature calibration    
@@ -167,7 +171,11 @@ void setup()
     
     // Set the motor speed to a valid value for Moonlite
     Motor.setSpeed(6000);
-    //Motor.setMoveMode(SC_MOVEMODE_SMOOTH);
+    Motor.setMoveMode(SC_MOVEMODE_SMOOTH);
+
+    temperatureCompensationEnabled = false;
+    temperatureCoefficient = 0;
+    timestamp = millis();
 }
 
 void loop()
@@ -183,4 +191,9 @@ void loop()
     {
       processCommand();
     }
+  
+  if (temperatureCompensationEnabled && ((millis() - timestamp) > 30000))
+  {
+      Motor.compensateTemperature(TemperatureSensor.getTemperature(), temperatureCoefficient);
+  }
 }

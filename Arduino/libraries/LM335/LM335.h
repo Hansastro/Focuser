@@ -28,7 +28,7 @@ along with LM335 library.  If not, see <http://www.gnu.org/licenses/>.
 #include <Arduino.h>
 #endif
 
-#define LM335_DEFAULT_INTEGRATION_LOOP 5
+#define LM335_DEFAULT_INTEGRATION_LOOP 5000
 
 class LM335
 {
@@ -37,12 +37,12 @@ class LM335
   LM335(int aquisistionPin);
 
   // Setters:
-  void setNumberOfIntegration(int integrationLoop);
+  void setNumberOfIntegration(unsigned long integrationLoop);
   void setCompensationValue(float compensationValue);
 
   // Getter:
   float getTemperature();
-  int getNumberOfIntegrationLoop();
+  unsigned long getNumberOfIntegrationLoop();
   float getCompensationValue();
 
   // Other Public Members
@@ -54,8 +54,8 @@ class LM335
   float temperature; // Temperature in C°
   float integratedTemperature;
 
-  int integrationLoop;
-  int integrationLoopNumber;
+  unsigned long integrationLoop;
+  unsigned long integrationLoopNumber;
   int aquisitionPin;
   float temperatureCompensationValue;
 

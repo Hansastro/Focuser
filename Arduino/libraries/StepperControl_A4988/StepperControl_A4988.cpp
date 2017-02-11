@@ -75,8 +75,7 @@ StepperControl_A4988::StepperControl_A4988(int stepPin,
   this->brakeMode = false;
   this->targetSpeedReached = false;
   this->positionTargetSpeedReached = 0;
-  this->deccelerationPosition = 0;
-
+  this->lastCompensatedTemperature = 0;
   this->setStepMode(SC_FULL_STEP);
 }
 
@@ -190,19 +189,22 @@ void StepperControl_A4988::Manage()
 
 void StepperControl_A4988::goToTargetPosition()
 {
-  if (this->moveMode == SC_MOVEMODE_SMOOTH)
+  if(this->currentPosition != this->targetPosition)
   {
-    this->speed = 0;
-    this->targetSpeedReached = false;
-    this->positionTargetSpeedReached = 0;
+    if (this->moveMode == SC_MOVEMODE_SMOOTH)
+    {
+      this->speed = 0;
+      this->targetSpeedReached = false;
+      this->positionTargetSpeedReached = 0;
+    }
+    else
+    {
+      this->speed = this->targetSpeed;
+    }
+    this->startPosition = this->currentPosition;
+    digitalWrite(this->enablePin, LOW);
+    this->inMove = true;
   }
-  else
-  {
-    this->speed = this->targetSpeed;
-  }
-  this->startPosition = this->currentPosition;
-  digitalWrite(this->enablePin, LOW);
-  this->inMove = true;
 }
 
 void StepperControl_A4988::stopMovement()
@@ -218,6 +220,32 @@ void StepperControl_A4988::stopMovement()
 int StepperControl_A4988::isInMove()
 {
   return this->inMove;
+}
+
+void StepperControl_A4988::compensateTemperature(float currentTemperature,
+						int temperatureCoefficient)
+{
+   static bool isInit = false;
+   int correction = 0;
+
+   if (!isInit)
+   {
+      this->lastCompensatedTemperature = currentTemperature;
+      isInit = true;
+   }
+   else
+   {
+      correction = (this->lastCompensatedTemperature - currentTemperature)
+			* (float)temperatureCoefficient;
+
+      if (correction)
+      {
+         this->lastCompensatedTemperature = currentTemperature;
+         this->setTargetPosition(this->getCurrentPosition() + (long)correction);
+         this->goToTargetPosition();
+      }
+   }
+
 }
 
 //------------------------------------------------------------------------------------

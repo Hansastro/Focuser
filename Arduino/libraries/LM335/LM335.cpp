@@ -40,7 +40,7 @@ LM335::LM335(int aquisitionPin)
 //-----------------------------------------------------------------------------
 // Setters
 
-void LM335::setNumberOfIntegration(int integrationLoop)
+void LM335::setNumberOfIntegration(unsigned long integrationLoop)
 {
   this->integrationLoop = integrationLoop;
 }
@@ -60,7 +60,7 @@ float LM335::getTemperature()
   return this->temperature;
 }
 
-int LM335::getNumberOfIntegrationLoop()
+unsigned long LM335::getNumberOfIntegrationLoop()
 {
   return this->integrationLoop;
 }
