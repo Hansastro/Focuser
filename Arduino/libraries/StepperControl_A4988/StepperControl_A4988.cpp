@@ -64,23 +64,30 @@ StepperControl_A4988::StepperControl_A4988(int stepPin,
 
   this->direction = SC_CLOCKWISE;
   this->inMove = false;
+  this->startPosition = 0;
   this->currentPosition = 0;
   this->targetPosition = 0;
-  this->speed = SC_DEFAULT_SPEED;
-  this->timeStamp = 0;
+  this->moveMode = SC_MOVEMODE_PER_STEP;
+  this->acceleration = SC_DEFAULT_ACCEL;
+  this->speed = 0;
+  this->timestamp = 0;
+  this->accelTimestamp = 0;
   this->brakeMode = false;
+  this->targetSpeedReached = false;
+  this->positionTargetSpeedReached = 0;
+  this->deccelerationPosition = 0;
 
   this->setStepMode(SC_FULL_STEP);
 }
 
 //------------------------------------------------------------------------------------
 // Setters
-void StepperControl_A4988::setTargetPosition(unsigned int position)
+void StepperControl_A4988::setTargetPosition(long position)
 {
   this->targetPosition = position;
 }
 
-void StepperControl_A4988::setCurrentPosition(unsigned int position)
+void StepperControl_A4988::setCurrentPosition(long position)
 {
   this->currentPosition = position;
 }
@@ -111,21 +118,21 @@ void StepperControl_A4988::setSpeed(unsigned int speed)
      {
          if (speed > SC_MAX_SPEED_SIXTEENTH_STEP)
          {
-            this->speed = SC_MAX_SPEED_SIXTEENTH_STEP;
+            this->targetSpeed = SC_MAX_SPEED_SIXTEENTH_STEP;
          }
          else
          {
-            this->speed = speed;
+            this->targetSpeed = speed;
          }
      }
      else
      {
-        this->speed = SC_MAX_SPEED;
+        this->targetSpeed = SC_MAX_SPEED;
      }
   }
   else
   {
-     this->speed = speed;
+     this->targetSpeed = speed;
   }
 }
 
@@ -136,12 +143,12 @@ void StepperControl_A4988::setBrakeMode(int brakeMode)
 
 //------------------------------------------------------------------------------------
 // Getters
-unsigned int StepperControl_A4988::getCurrentPosition()
+long StepperControl_A4988::getCurrentPosition()
 {
   return this->currentPosition;
 }
 
-unsigned int StepperControl_A4988::getTargetPosition()
+long StepperControl_A4988::getTargetPosition()
 {
   return this->targetPosition;
 }
@@ -175,7 +182,7 @@ int StepperControl_A4988::getBrakeMode()
 // Other public members
 void StepperControl_A4988::Manage()
 {
-  if(this->inMove)
+   if(this->inMove)
     {
       this->moveMotor();
     }
@@ -183,6 +190,17 @@ void StepperControl_A4988::Manage()
 
 void StepperControl_A4988::goToTargetPosition()
 {
+  if (this->moveMode == SC_MOVEMODE_SMOOTH)
+  {
+    this->speed = 0;
+    this->targetSpeedReached = false;
+    this->positionTargetSpeedReached = 0;
+  }
+  else
+  {
+    this->speed = this->targetSpeed;
+  }
+  this->startPosition = this->currentPosition;
   digitalWrite(this->enablePin, LOW);
   this->inMove = true;
 }
@@ -192,6 +210,9 @@ void StepperControl_A4988::stopMovement()
   if (! this->getBrakeMode())
     digitalWrite(this->enablePin, HIGH);
   this->inMove = false;
+  this->speed = 0;
+  this->targetSpeedReached = false;
+  this->positionTargetSpeedReached = 0;
 }
 
 int StepperControl_A4988::isInMove()
@@ -203,11 +224,17 @@ int StepperControl_A4988::isInMove()
 // Privates
 void StepperControl_A4988::moveMotor()
 {
-  if(this->targetPosition != this->currentPosition)
+  if (this->moveMode == SC_MOVEMODE_SMOOTH)
+  {
+     this->calculateSpeed();
+  }
+
+  if((this->targetPosition != this->currentPosition))
     {
-      if ((millis() - this->timeStamp) >= ((unsigned long)((1/(float)this->speed)*1000)))
+      if ((this->speed != 0) && (micros() - this->timestamp)
+	   >= ((unsigned long)((1/((float)this->speed+1))*1000)))
 	{
-	  if(((long)this->targetPosition - (long)this->currentPosition) > 0)
+	  if((this->targetPosition - this->currentPosition) > 0)
 	    {
 	      if(this->direction == SC_CLOCKWISE)
 		{
@@ -236,13 +263,88 @@ void StepperControl_A4988::moveMotor()
 	  delayMicroseconds(5);
 	  digitalWrite(this->stepPin, HIGH);
   	  delayMicroseconds(5);
-	  digitalWrite(this->stepPin, LOW);
-	  
-	  this->timeStamp = millis();
+	  digitalWrite(this->stepPin, LOW);      
+	
+          if (this->speed >= this->targetSpeed)
+	  {
+	    if (!this->targetSpeedReached)
+	    {
+	      this->positionTargetSpeedReached = this->startPosition
+						- this->currentPosition;
+	      if (this->positionTargetSpeedReached < 0)
+              {
+	        this->positionTargetSpeedReached *= -1;
+	      }	  
+	   }
+	   this->speed = this->targetSpeed;
+	   this->targetSpeedReached = true;
+	  }  
+	  this->timestamp = micros();
 	}
     }
   else
     {
       this->stopMovement();
     }
+}
+
+void  StepperControl_A4988::calculateSpeed()
+{
+     if ((millis() - this->accelTimestamp) >= 50)
+      {
+	long midway = (this->targetPosition - this->startPosition) / 2;	      
+	
+        if (midway > 0)
+	{
+	  midway += this->startPosition;
+          if (!this->targetSpeedReached && (this->currentPosition < midway))
+	  {
+	    this->speed += this->acceleration;
+	  }
+	  else
+	  {
+	    if ((!this->targetSpeedReached && (this->currentPosition > midway))
+		|| (this->currentPosition >= (this->targetPosition - this->positionTargetSpeedReached)))
+	    {
+	      
+		if ((this->targetPosition != this->currentPosition)
+			&& (this->speed > this->acceleration))
+		{
+		   this->speed -= this->acceleration;
+		}	        
+		else
+		{
+	          this->speed = this->acceleration;
+		}
+	      
+	    }
+	  }
+        }
+        else
+	{
+	  midway = -1*midway - this->startPosition;
+          if (!this->targetSpeedReached && (this->currentPosition > midway))
+	  {
+	    this->speed += this->acceleration;
+	  }
+	  else
+	  {
+	    if ((!this->targetSpeedReached && (this->currentPosition < midway))
+		|| (this->currentPosition <= (this->positionTargetSpeedReached + this->targetPosition)))
+	    {
+
+		if ((this->targetPosition != this->currentPosition)
+			&& (this->speed > this->acceleration))
+		{
+		   this->speed -= this->acceleration;
+		}	        
+		else
+		{
+		  this->speed = this->acceleration;
+		}
+	    }
+	  }
+        }
+	this->accelTimestamp = millis();
+      }
 }

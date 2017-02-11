@@ -2,12 +2,12 @@
 
 StepperControl_A4988 myStepper(8, 9, 3, 4, 5, 2, 7, 6);
 
-unsigned int currentPosition = 0;
+int currentPosition = 0;
 int isInitDone = 0;
 
-unsigned int ping = 0;
-unsigned int pong = 10000; //35000;
-int direction = 0;
+long ping = 1000;
+long pong = 35000;
+int direction = 1;
 unsigned long timeStamp = 0;
 
 void setup()
@@ -18,6 +18,8 @@ void setup()
   myStepper.setStepMode(SC_SIXTEENTH_STEP);
   myStepper.setBrakeMode(false);
   myStepper.setSpeed(10000);
+  myStepper.setMoveMode(SC_MOVEMODE_SMOOTH);
+  //myStepper.setMoveMode(SC_MOVEMODE_PER_STEP);
 }
 
 void loop()
@@ -34,18 +36,30 @@ void loop()
 
   if(!myStepper.isInMove())
   {
+    delay(1000);
     myStepper.setTargetPosition(direction?ping:pong);
+    //myStepper.setTargetPosition(35000);
     myStepper.goToTargetPosition();
     direction = direction?0:1;
   } 
     
-  if ((millis() - timeStamp) > 500)
+  if ((millis() - timeStamp) > 100)
   {
-    Serial.print(millis());
-    Serial.print(" ");
-    Serial.print(timeStamp);
-    Serial.print(" ");
-    Serial.println(myStepper.getSpeed());
+//    Serial.print("Time: ");
+//    Serial.print(millis());
+//    Serial.print("\tTimestamp: ");
+//    Serial.print(timeStamp);
+//    Serial.print("\tSpeed: ");
+//    Serial.print(myStepper.getSpeed());
+//    Serial.print("\tTarget Speed: ");
+//    Serial.print(myStepper.targetSpeed);
+//    Serial.print("\tPos: ");
+//    Serial.print(myStepper.getCurrentPosition());
+//    Serial.print("\tTarget Position: ");
+//    Serial.print(myStepper.getTargetPosition());
+//    Serial.print("\t speed target reached: ");
+//    Serial.println(myStepper.positionTargetSpeedReached);
+      Serial.println(myStepper.isInMove());
     timeStamp = millis();
   }
 

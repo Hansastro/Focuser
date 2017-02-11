@@ -44,10 +44,12 @@ along with StepperControl library.  If not, see <http://www.gnu.org/licenses/>.
 #define SC_SIXTEENTH_STEP 7
 
 #define SC_MAX_SPEED 1000
-#define SC_MAX_SPEED_SIXTEENTH_STEP 3000
+#define SC_MAX_SPEED_SIXTEENTH_STEP 10000
 
 #define SC_MOVEMODE_PER_STEP 0
 #define SC_MOVEMODE_SMOOTH 1
+
+#define SC_DEFAULT_ACCEL 1
 
 #define SC_DEFAULT_SPEED 1000
 
@@ -65,8 +67,8 @@ class StepperControl_A4988
 			int resetPin);
 
   // Setters
-  void setTargetPosition(unsigned int position);
-  void setCurrentPosition(unsigned int position);
+  void setTargetPosition(long position);
+  void setCurrentPosition(long position);
   void setDirection(int direction);
   void setStepMode(int stepMode);
   void setMoveMode(int moveMode);
@@ -74,8 +76,8 @@ class StepperControl_A4988
   void setBrakeMode(int state);
 
   // Getters
-  unsigned int getCurrentPosition();
-  unsigned int getTargetPosition();
+  long getCurrentPosition();
+  long getTargetPosition();
   int getDirection();
   int getStepMode();
   int getMoveMode();
@@ -88,17 +90,24 @@ class StepperControl_A4988
   void stopMovement();
   int isInMove();
   
+unsigned int targetSpeed;
+long positionTargetSpeedReached;
  private:
   int direction;
   int stepMode;
   int moveMode;
   int inMove;
   int brakeMode;
-  unsigned int currentPosition;
-  unsigned int targetPosition;
+  unsigned int acceleration;
+  long startPosition; 
+  long currentPosition;
+  long targetPosition;
   unsigned int speed;  // Speed in ticks per seconds
+  bool targetSpeedReached;
+  long deccelerationPosition;
 
-  unsigned long timeStamp;
+  unsigned long timestamp;
+  unsigned long accelTimestamp;
 
   int stepPin;
   int directionPin;
@@ -110,6 +119,7 @@ class StepperControl_A4988
   int resetPin;
 
   void moveMotor();
+  void calculateSpeed();
 };
 
 #endif //stepperControl_A4988_h
