@@ -154,7 +154,7 @@ void processCommand()
       break;
     case ML_PO:
       // Temperature calibration    
-      // Not implemented
+      TemperatureSensor.setCompensationValue(SerialProtocol.getCommand().parameter/2.0);
       break;
     default:
       break;
@@ -166,7 +166,8 @@ void setup()
     SerialProtocol.init(9600);
     
     // Set the motor speed to a valid value for Moonlite
-    Motor.setSpeed(1000);
+    Motor.setSpeed(6000);
+    //Motor.setMoveMode(SC_MOVEMODE_SMOOTH);
 }
 
 void loop()
