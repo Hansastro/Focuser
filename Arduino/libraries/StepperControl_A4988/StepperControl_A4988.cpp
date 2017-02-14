@@ -76,6 +76,7 @@ StepperControl_A4988::StepperControl_A4988(int stepPin,
   this->targetSpeedReached = false;
   this->positionTargetSpeedReached = 0;
   this->lastCompensatedTemperature = 0;
+  this->temperatureCompensationIsInit = false;
   this->setStepMode(SC_FULL_STEP);
 }
 
@@ -213,7 +214,7 @@ void StepperControl_A4988::stopMovement()
     digitalWrite(this->enablePin, HIGH);
   this->inMove = false;
   this->speed = 0;
-  this->targetSpeedReached = false;
+  this->temperatureCompensationIsInit = false;
   this->positionTargetSpeedReached = 0;
 }
 
@@ -225,13 +226,12 @@ int StepperControl_A4988::isInMove()
 void StepperControl_A4988::compensateTemperature(float currentTemperature,
 						int temperatureCoefficient)
 {
-   static bool isInit = false;
    int correction = 0;
 
-   if (!isInit)
+   if (!this->temperatureCompensationIsInit)
    {
       this->lastCompensatedTemperature = currentTemperature;
-      isInit = true;
+      this->temperatureCompensationIsInit = true;
    }
    else
    {

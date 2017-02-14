@@ -106,6 +106,7 @@ class StepperControl_A4988
   unsigned int targetSpeed;
   long positionTargetSpeedReached;
   float lastCompensatedTemperature;
+  bool temperatureCompensationIsInit;
 
   unsigned long timestamp;
   unsigned long accelTimestamp;
