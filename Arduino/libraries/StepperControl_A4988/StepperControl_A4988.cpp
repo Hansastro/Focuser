@@ -350,7 +350,7 @@ void  StepperControl_A4988::calculateSpeed()
         }
         else
 	{
-	  midway = -1*midway - this->startPosition;
+	  midway = this->startPosition - -1*midway;
           if (!this->targetSpeedReached && (this->currentPosition > midway))
 	  {
 	    this->speed += this->acceleration;
