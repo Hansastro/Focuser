@@ -49,13 +49,15 @@ along with StepperControl library.  If not, see <http://www.gnu.org/licenses/>.
 #define SC_MOVEMODE_PER_STEP 0
 #define SC_MOVEMODE_SMOOTH 1
 
-#define SC_DEFAULT_ACCEL 1
+#define SC_DEFAULT_ACCEL 200
 
 #define SC_DEFAULT_SPEED 1000
 
 class StepperControl_A4988
 {
  public:
+  //DEBUG
+  long dbg_correction;
   // Constructors:
   StepperControl_A4988(int stepPin,
 			int directionPin,

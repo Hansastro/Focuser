@@ -226,7 +226,7 @@ int StepperControl_A4988::isInMove()
 void StepperControl_A4988::compensateTemperature(float currentTemperature,
 						int temperatureCoefficient)
 {
-   int correction = 0;
+   long correction = 0;
 
    if (!this->temperatureCompensationIsInit)
    {
@@ -235,12 +235,13 @@ void StepperControl_A4988::compensateTemperature(float currentTemperature,
    }
    else
    {
-      correction = (this->lastCompensatedTemperature - currentTemperature)
-			* (float)temperatureCoefficient;
+      correction = (long)(1.0*(this->lastCompensatedTemperature - currentTemperature)
+			* (float)temperatureCoefficient);
 
       if (correction)
       {
          this->lastCompensatedTemperature = currentTemperature;
+	 this->dbg_correction = this->getCurrentPosition() + (long)correction;
          this->setTargetPosition(this->getCurrentPosition() + (long)correction);
          this->goToTargetPosition();
       }
@@ -320,8 +321,15 @@ void  StepperControl_A4988::calculateSpeed()
 {
      if ((millis() - this->accelTimestamp) >= 50)
       {
-	long midway = (this->targetPosition - this->startPosition) / 2;	      
+	long midway = (this->targetPosition - this->startPosition);
+	// avoid miday == 0 in case of movement of only one step	
+	if (abs(midway) == 1)
+	{
+	   midway *= 2;
+	}	      
 	
+	midway /= 2;
+
         if (midway > 0)
 	{
 	  midway += this->startPosition;
