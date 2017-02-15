@@ -261,7 +261,7 @@ void StepperControl_A4988::moveMotor()
   if((this->targetPosition != this->currentPosition))
     {
       if ((this->speed != 0) && (micros() - this->timestamp)
-	   >= ((unsigned long)((1/((float)this->speed+1))*1000)))
+	   >= ((unsigned long)((1/((float)this->speed+1))*1000000)))
 	{
 	  if((this->targetPosition - this->currentPosition) > 0)
 	    {
