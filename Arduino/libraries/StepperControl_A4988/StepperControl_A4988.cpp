@@ -154,6 +154,11 @@ void StepperControl_A4988::setTemperatureCompensationCoefficient(int coef)
 void StepperControl_A4988::setCurrentTemperature(float curTemp)
 {
    this->currentTemperature = curTemp;
+   if(!this->temperatureCompensationIsInit)
+   {
+      this->lastCompensatedTemperature = this->currentTemperature;
+      this->temperatureCompensationIsInit = true;
+   }
 }
 
 //------------------------------------------------------------------------------------
@@ -238,7 +243,6 @@ void StepperControl_A4988::stopMovement()
     digitalWrite(this->enablePin, HIGH);
   this->inMove = false;
   this->speed = 0;
-  this->temperatureCompensationIsInit = false;
   this->positionTargetSpeedReached = 0;
 }
 
@@ -251,12 +255,7 @@ void StepperControl_A4988::compensateTemperature()
 {
    long correction = 0;
 
-   if (!this->temperatureCompensationIsInit)
-   {
-      this->lastCompensatedTemperature = currentTemperature;
-      this->temperatureCompensationIsInit = true;
-   }
-   else
+   if (this->temperatureCompensationIsInit && !this->inMove)
    {
       correction = (long)(1.0*(this->lastCompensatedTemperature
 				- this->currentTemperature)
@@ -270,7 +269,6 @@ void StepperControl_A4988::compensateTemperature()
          this->goToTargetPosition();
       }
    }
-
 }
 
 //------------------------------------------------------------------------------------
@@ -417,6 +415,7 @@ bool StepperControl_A4988::isTemperatureCompensationEnabled()
 
 void StepperControl_A4988::enableTemperatureCompensation()
 {
+   this->temperatureCompensationIsInit = false;
    this->temperatureCompensationIsEnabled = true;
 }
 

@@ -44,6 +44,7 @@ void processCommand()
       Motor.stopMovement();
       break;
     case ML_GB:
+      // Set the Red Led backligth value
       // Dump value necessary to run the official moonlite software
       SerialProtocol.setAnswer(2, 0x00);
     case ML_GC:
