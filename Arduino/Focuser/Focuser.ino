@@ -14,8 +14,6 @@ const int resetPin = 6;
 const int temperatureSensorPin = 4;
 
 unsigned long timestamp;
-bool temperatureCompensationEnabled;
-int temperatureCoefficient;
 
 LM335 TemperatureSensor(temperatureSensorPin);
 StepperControl_A4988 Motor(stepPin,
@@ -50,27 +48,25 @@ void processCommand()
       SerialProtocol.setAnswer(2, 0x00);
     case ML_GC:
       // Return the temperature coefficient
-      // Not implemented
+      SerialProtocol.setAnswer(2, (long)Motor.getTemperatureCompensationCoefficient());
       break;
     case ML_GD:
       // Return the current motor speed
       switch (Motor.getSpeed())
       {
-        case 160:
+        case 500:
           SerialProtocol.setAnswer(2, (long)20);
           break;
-        case 320:
+        case 1000:
           SerialProtocol.setAnswer(2, (long)10);
           break;
-        case 630:
+        case 3000:
           SerialProtocol.setAnswer(2, (long)8);
           break;
-        case 800:
-        case 1250:
+        case 5000:
           SerialProtocol.setAnswer(2, (long)4);
           break;
-        case 1000:
-        case 2500:
+        case 7000:
           SerialProtocol.setAnswer(2, (long)2);
           break;
         default:
@@ -103,26 +99,26 @@ void processCommand()
       break;
     case ML_SC:
       // Set the temperature coefficient
-      temperatureCoefficient = SerialProtocol.getCommand().parameter;
+      Motor.setTemperatureCompensationCoefficient(SerialProtocol.getCommand().parameter);
       break;
     case ML_SD:
       // Set the motor speed
       switch (SerialProtocol.getCommand().parameter)
       {
         case 0x02:
-          Motor.setSpeed(Motor.getStepMode() == SC_SIXTEENTH_STEP ? 2500 : 1000);
+          Motor.setSpeed(7000);
           break;
         case 0x04:
-          Motor.setSpeed(Motor.getStepMode() == SC_SIXTEENTH_STEP ? 1250 : 800);
+          Motor.setSpeed(5000);
           break;
         case 0x08:
-          Motor.setSpeed(630);
+          Motor.setSpeed(3000);
           break;
         case 0x10:
-          Motor.setSpeed(320);
+          Motor.setSpeed(1000);
           break;
         case 0x20:
-          Motor.setSpeed(160);
+          Motor.setSpeed(500);
           break;
         default:
           break;
@@ -131,9 +127,9 @@ void processCommand()
     case ML_SF:
       // Set the stepping mode to full step
       Motor.setStepMode(SC_EIGHTH_STEP);
-      if (Motor.getSpeed() > 1000)
+      if (Motor.getSpeed() >= 6000)
       {
-        Motor.setSpeed(630);
+        Motor.setSpeed(6000);
       }
       break;
     case ML_SH:
@@ -150,11 +146,11 @@ void processCommand()
       break;
     case ML_PLUS:
       // Activate temperature compensation focusing
-      temperatureCompensationEnabled = true;
+      Motor.enableTemperatureCompensation();
       break;
     case ML_MINUS:
       // Disable temperature compensation focusing
-      temperatureCompensationEnabled = false;
+      Motor.disableTemperatureCompensation();
       break;
     case ML_PO:
       // Temperature calibration
@@ -170,11 +166,10 @@ void setup()
   SerialProtocol.init(9600);
 
   // Set the motor speed to a valid value for Moonlite
-  Motor.setSpeed(6000);
+  Motor.setSpeed(7000);
   Motor.setMoveMode(SC_MOVEMODE_SMOOTH);
+  //Motor.setMoveMode(SC_MOVEMODE_PER_STEP);
 
-  temperatureCompensationEnabled = false;
-  temperatureCoefficient = 0;
   timestamp = millis();
 }
 
@@ -183,9 +178,10 @@ void loop()
   if (!Motor.isInMove())
   {
     TemperatureSensor.Manage();
-    if (temperatureCompensationEnabled && ((millis() - timestamp) > 30000))
+    if (Motor.isTemperatureCompensationEnabled() && ((millis() - timestamp) > 30000))
     {
-      Motor.compensateTemperature(TemperatureSensor.getTemperature(), temperatureCoefficient);
+      Motor.setCurrentTemperature(TemperatureSensor.getTemperature());
+      Motor.compensateTemperature();
       timestamp = millis();
     }
   }

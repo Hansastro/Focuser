@@ -21,7 +21,7 @@ void setup()
   myStepper.setDirection(SC_CLOCKWISE);
   myStepper.setStepMode(SC_SIXTEENTH_STEP);
   myStepper.setBrakeMode(false);
-  myStepper.setSpeed(9000);
+  myStepper.setSpeed(7000);
   myStepper.setMoveMode(SC_MOVEMODE_SMOOTH);
   //myStepper.setMoveMode(SC_MOVEMODE_PER_STEP);
 }

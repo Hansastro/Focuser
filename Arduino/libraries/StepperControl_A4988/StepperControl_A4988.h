@@ -53,7 +53,7 @@ along with StepperControl library.  If not, see <http://www.gnu.org/licenses/>.
 #define SC_MOVEMODE_PER_STEP 0
 #define SC_MOVEMODE_SMOOTH 1
 
-#define SC_DEFAULT_ACCEL 500
+#define SC_DEFAULT_ACCEL 100
 
 #define SC_DEFAULT_SPEED 1000
 
@@ -80,6 +80,8 @@ class StepperControl_A4988
   void setMoveMode(int moveMode);
   void setSpeed(unsigned int speed);
   void setBrakeMode(int state);
+  void setTemperatureCompensationCoefficient(int coef);
+  void setCurrentTemperature(float temperature);
 
   // Getters
   long getCurrentPosition();
@@ -89,13 +91,17 @@ class StepperControl_A4988
   int getMoveMode();
   unsigned int getSpeed();
   int getBrakeMode();
+  int getTemperatureCompensationCoefficient();
 
   // Other public members
   void Manage();
   void goToTargetPosition();
   void stopMovement();
   int isInMove();
-  void compensateTemperature(float CurrentTemperature, int temperatureCoefficient);  
+  void compensateTemperature();  
+  bool isTemperatureCompensationEnabled();
+  void enableTemperatureCompensation();
+  void disableTemperatureCompensation();
 
  private:
   int direction;
@@ -111,8 +117,11 @@ class StepperControl_A4988
   bool targetSpeedReached;
   unsigned int targetSpeed;
   long positionTargetSpeedReached;
+  bool temperatureCompensationIsEnabled;
+  int temperatureCompensationCoefficient;
   float lastCompensatedTemperature;
   bool temperatureCompensationIsInit;
+  float currentTemperature;
 
   unsigned long timestamp;
   unsigned long accelTimestamp;

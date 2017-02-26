@@ -77,6 +77,9 @@ StepperControl_A4988::StepperControl_A4988(int stepPin,
   this->positionTargetSpeedReached = 0;
   this->lastCompensatedTemperature = 0;
   this->temperatureCompensationIsInit = false;
+  this->temperatureCompensationIsEnabled = false;
+  this->temperatureCompensationCoefficient = 0;
+  this->currentTemperature = 0;
   this->setStepMode(SC_FULL_STEP);
 }
 
@@ -143,6 +146,16 @@ void StepperControl_A4988::setBrakeMode(int brakeMode)
   this->brakeMode = brakeMode;
 }
 
+void StepperControl_A4988::setTemperatureCompensationCoefficient(int coef)
+{
+   this->temperatureCompensationCoefficient = coef;
+}
+
+void StepperControl_A4988::setCurrentTemperature(float curTemp)
+{
+   this->currentTemperature = curTemp;
+}
+
 //------------------------------------------------------------------------------------
 // Getters
 long StepperControl_A4988::getCurrentPosition()
@@ -180,6 +193,11 @@ int StepperControl_A4988::getBrakeMode()
   return this->brakeMode;
 }
 
+int StepperControl_A4988::getTemperatureCompensationCoefficient()
+{
+   return this->temperatureCompensationCoefficient;
+}
+
 //------------------------------------------------------------------------------------
 // Other public members
 void StepperControl_A4988::Manage()
@@ -188,6 +206,10 @@ void StepperControl_A4988::Manage()
     {
       this->moveMotor();
     }
+   else if(this->temperatureCompensationIsEnabled)
+   {
+      
+   }
 }
 
 void StepperControl_A4988::goToTargetPosition()
@@ -225,8 +247,7 @@ int StepperControl_A4988::isInMove()
   return this->inMove;
 }
 
-void StepperControl_A4988::compensateTemperature(float currentTemperature,
-						int temperatureCoefficient)
+void StepperControl_A4988::compensateTemperature()
 {
    long correction = 0;
 
@@ -237,12 +258,13 @@ void StepperControl_A4988::compensateTemperature(float currentTemperature,
    }
    else
    {
-      correction = (long)(1.0*(this->lastCompensatedTemperature - currentTemperature)
-			* (float)temperatureCoefficient);
+      correction = (long)(1.0*(this->lastCompensatedTemperature
+				- this->currentTemperature)
+		* (float)this->temperatureCompensationCoefficient);
 
       if (correction)
       {
-         this->lastCompensatedTemperature = currentTemperature;
+         this->lastCompensatedTemperature = this->currentTemperature;
 	 this->dbg_correction = this->getCurrentPosition() + (long)correction;
          this->setTargetPosition(this->getCurrentPosition() + (long)correction);
          this->goToTargetPosition();
@@ -386,3 +408,20 @@ void  StepperControl_A4988::calculateSpeed()
 	this->accelTimestamp = millis();
       }
 }
+
+
+bool StepperControl_A4988::isTemperatureCompensationEnabled()
+{
+   return this->temperatureCompensationIsEnabled;
+}
+
+void StepperControl_A4988::enableTemperatureCompensation()
+{
+   this->temperatureCompensationIsEnabled = true;
+}
+
+void StepperControl_A4988::disableTemperatureCompensation()
+{
+   this->temperatureCompensationIsEnabled = false;
+}
+
