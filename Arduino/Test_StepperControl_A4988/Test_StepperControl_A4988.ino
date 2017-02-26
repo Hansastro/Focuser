@@ -8,9 +8,9 @@ LM335 tempSensor(4);
 int currentPosition = 0;
 int isInitDone = 0;
 
-long ping = 1000;
-long pong = 35000;
-int direction = 1;
+long ping = 0;
+long pong = 2000;
+bool direction = false;
 unsigned long timeStamp = 0;
 unsigned long tempComp_timestamp = 0;
 
@@ -19,9 +19,9 @@ void setup()
   Serial.begin(9600);
   
   myStepper.setDirection(SC_CLOCKWISE);
-  myStepper.setStepMode(SC_SIXTEENTH_STEP);
+  myStepper.setStepMode(SC_FULL_STEP);
   myStepper.setBrakeMode(false);
-  myStepper.setSpeed(20000);
+  myStepper.setSpeed(6000);
   myStepper.setMoveMode(SC_MOVEMODE_SMOOTH);
   //myStepper.setMoveMode(SC_MOVEMODE_PER_STEP);
 }
@@ -30,11 +30,11 @@ void loop()
 { 
   if (isInitDone == 0)
   {
-    myStepper.setTargetPosition(1000);
+    //myStepper.setTargetPosition(1000);
     Serial.println("Init");
     //Serial.println(myStepper.getTargetPosition());
     isInitDone = 1;
-    myStepper.goToTargetPosition();
+    //myStepper.goToTargetPosition();
   }
 
   myStepper.Manage();
@@ -42,8 +42,9 @@ void loop()
 
   if (!myStepper.isInMove())
  {
-     myStepper.setTargetPosition(1001);
-      myStepper.goToTargetPosition();
+     myStepper.setTargetPosition(direction?ping:pong);
+     myStepper.goToTargetPosition();
+     direction = !direction; 
   } 
 
 //

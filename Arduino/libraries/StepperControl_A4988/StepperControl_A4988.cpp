@@ -112,28 +112,30 @@ void StepperControl_A4988::setMoveMode(int moveMode)
 
 void StepperControl_A4988::setSpeed(unsigned int speed)
 {
-  if(speed > SC_MAX_SPEED)
-  {
-     if(this->stepMode == SC_SIXTEENTH_STEP)
-     {
-         if (speed > SC_MAX_SPEED_SIXTEENTH_STEP)
-         {
-            this->targetSpeed = SC_MAX_SPEED_SIXTEENTH_STEP;
-         }
-         else
-         {
-            this->targetSpeed = speed;
-         }
-     }
-     else
-     {
-        this->targetSpeed = SC_MAX_SPEED;
-     }
-  }
-  else
-  {
-     this->targetSpeed = speed;
-  }
+   if(this->stepMode == SC_SIXTEENTH_STEP && this->speed > SC_MAX_SPEED_SIXTEENTH_STEP)
+   {
+      this->targetSpeed = SC_MAX_SPEED_SIXTEENTH_STEP;
+   }
+   else if(this->stepMode == SC_EIGHTH_STEP && this->speed > SC_MAX_SPEED_EIGHTH_STEP)
+   {
+      this->targetSpeed = SC_MAX_SPEED_EIGHTH_STEP;
+   } 
+   else if(this->stepMode == SC_QUATER_STEP && this->speed > SC_MAX_SPEED_QUATER_STEP)
+   {
+      this->targetSpeed = SC_MAX_SPEED_QUATER_STEP;
+   }
+   else if(this->stepMode == SC_HALF_STEP && this->speed > SC_MAX_SPEED_HALF_STEP)
+   {
+      this->targetSpeed = SC_MAX_SPEED_HALF_STEP; 
+   }
+   else if(this->stepMode == SC_FULL_STEP && this->speed > SC_MAX_SPEED_FULL_STEP)
+   {
+      this->targetSpeed = SC_MAX_SPEED_FULL_STEP;    
+   }
+   else
+   {
+      this->targetSpeed = SC_MAX_SPEED_FULL_STEP;
+   }
 }
 
 void StepperControl_A4988::setBrakeMode(int brakeMode)

@@ -43,8 +43,12 @@ along with StepperControl library.  If not, see <http://www.gnu.org/licenses/>.
 #define SC_EIGHTH_STEP 6
 #define SC_SIXTEENTH_STEP 7
 
-#define SC_MAX_SPEED 1000
-#define SC_MAX_SPEED_SIXTEENTH_STEP 10000
+#define SC_MAX_SPEED 1000000
+#define SC_MAX_SPEED_FULL_STEP 1000
+#define SC_MAX_SPEED_HALF_STEP 6000
+#define SC_MAX_SPEED_QUATER_STEP 6000
+#define SC_MAX_SPEED_EIGHTH_STEP 7000
+#define SC_MAX_SPEED_SIXTEENTH_STEP 7000
 
 #define SC_MOVEMODE_PER_STEP 0
 #define SC_MOVEMODE_SMOOTH 1
