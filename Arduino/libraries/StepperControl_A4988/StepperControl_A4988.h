@@ -53,7 +53,7 @@ along with StepperControl library.  If not, see <http://www.gnu.org/licenses/>.
 #define SC_MOVEMODE_PER_STEP 0
 #define SC_MOVEMODE_SMOOTH 1
 
-#define SC_DEFAULT_ACCEL 200
+#define SC_DEFAULT_ACCEL 500
 
 #define SC_DEFAULT_SPEED 1000
 

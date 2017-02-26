@@ -112,29 +112,29 @@ void StepperControl_A4988::setMoveMode(int moveMode)
 
 void StepperControl_A4988::setSpeed(unsigned int speed)
 {
-   if(this->stepMode == SC_SIXTEENTH_STEP && this->speed > SC_MAX_SPEED_SIXTEENTH_STEP)
+   if(this->stepMode == SC_SIXTEENTH_STEP && speed >= SC_MAX_SPEED_SIXTEENTH_STEP)
    {
       this->targetSpeed = SC_MAX_SPEED_SIXTEENTH_STEP;
    }
-   else if(this->stepMode == SC_EIGHTH_STEP && this->speed > SC_MAX_SPEED_EIGHTH_STEP)
+   else if(this->stepMode == SC_EIGHTH_STEP && speed >= SC_MAX_SPEED_EIGHTH_STEP)
    {
       this->targetSpeed = SC_MAX_SPEED_EIGHTH_STEP;
    } 
-   else if(this->stepMode == SC_QUATER_STEP && this->speed > SC_MAX_SPEED_QUATER_STEP)
+   else if(this->stepMode == SC_QUATER_STEP && speed >= SC_MAX_SPEED_QUATER_STEP)
    {
       this->targetSpeed = SC_MAX_SPEED_QUATER_STEP;
    }
-   else if(this->stepMode == SC_HALF_STEP && this->speed > SC_MAX_SPEED_HALF_STEP)
+   else if(this->stepMode == SC_HALF_STEP && speed >= SC_MAX_SPEED_HALF_STEP)
    {
       this->targetSpeed = SC_MAX_SPEED_HALF_STEP; 
    }
-   else if(this->stepMode == SC_FULL_STEP && this->speed > SC_MAX_SPEED_FULL_STEP)
+   else if(this->stepMode == SC_FULL_STEP && speed >= SC_MAX_SPEED_FULL_STEP)
    {
       this->targetSpeed = SC_MAX_SPEED_FULL_STEP;    
    }
    else
    {
-      this->targetSpeed = SC_MAX_SPEED_FULL_STEP;
+      this->targetSpeed = speed;
    }
 }
 
@@ -255,10 +255,10 @@ void StepperControl_A4988::compensateTemperature(float currentTemperature,
 // Privates
 void StepperControl_A4988::moveMotor()
 {
-  if (this->moveMode == SC_MOVEMODE_SMOOTH)
-  {
-     this->calculateSpeed();
-  }
+   if (this->moveMode == SC_MOVEMODE_SMOOTH)
+   {
+      this->calculateSpeed();
+   }
 
   if((this->targetPosition != this->currentPosition))
     {

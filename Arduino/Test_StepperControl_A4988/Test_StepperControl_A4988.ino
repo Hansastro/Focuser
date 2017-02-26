@@ -9,7 +9,7 @@ int currentPosition = 0;
 int isInitDone = 0;
 
 long ping = 0;
-long pong = 2000;
+long pong = 35000;
 bool direction = false;
 unsigned long timeStamp = 0;
 unsigned long tempComp_timestamp = 0;
@@ -19,9 +19,9 @@ void setup()
   Serial.begin(9600);
   
   myStepper.setDirection(SC_CLOCKWISE);
-  myStepper.setStepMode(SC_FULL_STEP);
+  myStepper.setStepMode(SC_SIXTEENTH_STEP);
   myStepper.setBrakeMode(false);
-  myStepper.setSpeed(6000);
+  myStepper.setSpeed(9000);
   myStepper.setMoveMode(SC_MOVEMODE_SMOOTH);
   //myStepper.setMoveMode(SC_MOVEMODE_PER_STEP);
 }
