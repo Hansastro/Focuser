@@ -2,6 +2,9 @@
 #include <Moonlite.h>
 #include <StepperControl_A4988.h>
 
+#include <U8x8lib.h>
+#include <U8g2lib.h>
+
 const int stepPin = 8;
 const int directionPin = 9;
 const int stepMode1 = 3;
@@ -11,9 +14,10 @@ const int enablePin = 2;
 const int sleepPin = 7;
 const int resetPin = 6;
 
-const int temperatureSensorPin = 4;
+const int temperatureSensorPin = 3;
 
 unsigned long timestamp;
+unsigned long displayTimestamp;
 
 LM335 TemperatureSensor(temperatureSensorPin);
 StepperControl_A4988 Motor(stepPin,
@@ -25,6 +29,13 @@ StepperControl_A4988 Motor(stepPin,
                            sleepPin,
                            resetPin);
 Moonlite SerialProtocol;
+
+// Declaration of the display
+U8G2_SSD1306_128X64_NONAME_1_HW_I2C Display(U8G2_R0);
+
+float temp = 0;
+long pos = 0;
+bool pageIsRefreshing = false;
 
 void processCommand()
 {
@@ -166,12 +177,17 @@ void setup()
 {
   SerialProtocol.init(9600);
 
+  Display.begin();
+  Display.setContrast(0);
+  Display.setFont(u8g2_font_crox4hb_tr);
+
   // Set the motor speed to a valid value for Moonlite
   Motor.setSpeed(7000);
   Motor.setMoveMode(SC_MOVEMODE_SMOOTH);
   //Motor.setMoveMode(SC_MOVEMODE_PER_STEP);
 
   timestamp = millis();
+  displayTimestamp = millis();
 }
 
 void loop()
@@ -192,5 +208,18 @@ void loop()
   if (SerialProtocol.isNewCommandAvailable())
   {
     processCommand();
+  }
+
+  if ((millis() - displayTimestamp) >= 1000 && !Motor.isInMove())
+  {
+    Display.firstPage();
+    temp = TemperatureSensor.getTemperature();
+    pos = Motor.getCurrentPosition();
+    do
+    {
+      Display.drawStr(0, 16, ((String("T: ") + String(temp, 1) + " C").c_str()));
+      Display.drawStr(0, 55, (String("Pos: ") + pos).c_str());
+    } while (Display.nextPage());
+    displayTimestamp = millis();
   }
 }
