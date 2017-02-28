@@ -11,7 +11,7 @@ Features:
 - full, half, quater, eighth and sixteenth step
 - temperature compensation (compensate the dilatation of the instrument)
 - software temperature adjustement
-- separate display (actualy in the dev branch)
+- separate display
 
 ## Element used
 - Arduino Uno ([link](https://www.arduino.cc/en/Main/ArduinoBoardUno))
